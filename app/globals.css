@@ -128,15 +128,16 @@
   }
 
   .toolbar {
-    @apply sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-[#f7faf8]/92 px-[1.1rem] py-[0.85rem] backdrop-blur-[14px];
+    @apply sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-line bg-[#f7faf8]/92 px-[1.1rem] py-[0.85rem] text-[#142c27] backdrop-blur-[14px];
   }
 
   .toolbar h1 {
-    @apply m-0 font-serif text-[1.1rem] text-ink;
+    @apply m-0 font-serif text-[1.1rem] text-[#142c27];
   }
 
-  .toolbar .text-muted {
-    @apply text-muted;
+  .toolbar .text-muted,
+  .toolbar .text-sm {
+    @apply text-[#4f655e];
   }
 
   .toolbar-actions {
@@ -161,7 +162,7 @@
   }
 
   .ghost {
-    @apply border border-line bg-white text-ink;
+    @apply border border-line bg-white text-[#142c27];
   }
 
   .primary {
@@ -466,7 +467,7 @@
   }
 
   .timeline-card {
-    @apply min-w-0 rounded-[16px] border border-line bg-[#f7faf8] p-4 text-ink transition-[border-color,background-color,transform,box-shadow] duration-150;
+    @apply min-w-0 rounded-[16px] border border-line bg-[#f7faf8] p-4 text-[#142c27] transition-[border-color,background-color,transform,box-shadow] duration-150;
   }
 
   .timeline-card:hover {
@@ -474,33 +475,44 @@
   }
 
   .ev-badge {
-    @apply inline-flex items-center rounded-full px-[0.5rem] py-[0.08rem] text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-white;
+    @apply inline-flex items-center rounded-full bg-[#4f655e] px-[0.5rem] py-[0.08rem] text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-white;
   }
 
+  /* Used by both timeline cards and Overall "Latest events" rows. */
+  .ev-security,
   .timeline-security .ev-badge {
-    @apply bg-danger;
+    @apply bg-[#9b2c2c];
   }
+  .ev-medical,
   .timeline-medical .ev-badge {
-    @apply bg-info;
+    @apply bg-[#0b6e99];
   }
+  .ev-eligibility,
   .timeline-eligibility .ev-badge {
     @apply bg-[#5e3aa0];
   }
+  .ev-biometrics,
   .timeline-biometrics .ev-badge {
-    @apply bg-warn;
+    @apply bg-[#8a5a00];
   }
+  .ev-background,
   .timeline-background .ev-badge {
-    @apply bg-accent;
+    @apply bg-[#0f5c4c];
   }
+  .ev-document,
   .timeline-document .ev-badge {
     @apply bg-[#1f4a78];
   }
+  .ev-system,
   .timeline-system .ev-badge {
-    @apply bg-[#64748b];
+    @apply bg-[#475569];
   }
+  .ev-neutral,
+  .ev-other,
+  .ev-muted,
   .timeline-neutral .ev-badge,
   .timeline-other .ev-badge {
-    @apply bg-muted;
+    @apply bg-[#4f655e];
   }
 
   .timeline-security .timeline-card {
@@ -524,7 +536,7 @@
   }
 
   .timeline-date {
-    @apply text-[0.78rem] font-medium tabular-nums tracking-[0.02em] text-muted;
+    @apply text-[0.78rem] font-medium tabular-nums tracking-[0.02em] text-[#4f655e];
   }
 
   .timeline-meta {
@@ -532,19 +544,19 @@
   }
 
   .timeline-time {
-    @apply text-muted;
+    @apply text-[#4f655e];
   }
 
   .timeline-title {
-    @apply m-0 text-[1.02rem] font-semibold tracking-[-0.01em] text-ink;
+    @apply m-0 text-[1.02rem] font-semibold tracking-[-0.01em] text-[#142c27];
   }
 
   .timeline-body {
-    @apply mt-1.5 text-[0.86rem] leading-relaxed text-muted;
+    @apply mt-1.5 text-[0.86rem] leading-relaxed text-[#4f655e];
   }
 
   .timeline-code {
-    @apply inline-block max-w-[28ch] truncate rounded-full bg-[rgba(79,101,94,0.12)] px-[0.5rem] py-[0.08rem] text-[0.7rem] text-muted;
+    @apply inline-block max-w-[28ch] truncate rounded-full bg-[rgba(79,101,94,0.12)] px-[0.5rem] py-[0.08rem] text-[0.7rem] text-[#4f655e];
   }
 
   .event-list {
