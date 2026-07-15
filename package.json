@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "tsx --test tests/render.test.ts tests/api.test.ts",
-    "test:bash": "bats tests/ircc-check.bats"
+    "test:bash": "bats tests/ircc-check.bats",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel"
   },
   "dependencies": {
     "next": "^16.2.10",

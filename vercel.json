@@ -1,8 +1,16 @@
 {
-  "functions": {
-    "app/api/ircc/**/*.ts": {
-      "maxDuration": 60,
-      "memory": 1024
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "regions": ["iad1"],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
     }
-  }
+  ]
 }
