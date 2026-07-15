@@ -1,0 +1,52 @@
+# Deploy IRCC Tracker (OpenNext → Cloudflare Workers) on every push to main.
+#
+# Required GitHub repository secrets:
+#   CLOUDFLARE_API_TOKEN   — API token with Workers Scripts:Edit (and Routes if needed)
+#   CLOUDFLARE_ACCOUNT_ID  — Cloudflare account id
+#
+# Settings → Secrets and variables → Actions → New repository secret
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build & deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build OpenNext for Cloudflare
+        run: npm run build:cf
+        env:
+          # Baked into the client bundle at build time; empty = same-origin /api.
+          NEXT_PUBLIC_API_BASE: ""
+
+      - name: Deploy Worker
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
