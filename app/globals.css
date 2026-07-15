@@ -480,7 +480,7 @@
 
   /* Primary timeline category chip — eye-catching but still secondary to the title. */
   .timeline-badge {
-    @apply shrink-0 rounded-[10px] px-2.5 py-[0.28rem] text-[0.68rem] font-bold tracking-[0.08em] shadow-[0_4px_12px_rgba(15,44,36,0.12)] ring-2 ring-white/80;
+    @apply shrink-0 rounded-[10px] px-2.5 py-[0.28rem] text-[0.68rem] font-bold tracking-[0.08em] shadow-[0_4px_12px_rgba(15,44,36,0.14)];
   }
 
   .timeline-security .timeline-badge {
