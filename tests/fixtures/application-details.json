@@ -1,0 +1,37 @@
+{
+  "app": {
+    "appNumber": "S300000000",
+    "lob": "PV2",
+    "status": "inProgress",
+    "lastUpdated": "2026-03-15T18:22:11.000Z",
+    "dateRecieved": "2025-01-01T00:00:00.000Z",
+    "firstName": "TEST",
+    "lastName": "USER"
+  },
+  "relations": [
+    {
+      "uci": "11-1111-1111",
+      "role": 1,
+      "firstName": "TEST",
+      "lastName": "USER",
+      "activities": {
+        "eligibility": "completed",
+        "medical": "inProgress",
+        "biometrics": "completed",
+        "background": "notStarted"
+      },
+      "history": [
+        {
+          "key": "Eligibility",
+          "dateCreated": "2025-01-10T09:00:00.000Z",
+          "dateLoaded": "2025-01-10T09:00:00.000Z"
+        },
+        {
+          "key": "Security",
+          "dateCreated": "2026-02-01T12:34:56.000Z",
+          "dateLoaded": "2026-02-01T12:34:56.000Z"
+        }
+      ]
+    }
+  ]
+}

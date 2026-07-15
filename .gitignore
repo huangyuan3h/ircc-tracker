@@ -1,0 +1,16 @@
+next-env.d.ts
+.next/
+node_modules/
+out/
+.env
+.env.local
+.env.*.local
+StatusCheck.txt
+StatusReport.html
+*.log
+.DS_Store
+.vercel
+test-results/
+/tmp/
+*.tmp
+.bats/

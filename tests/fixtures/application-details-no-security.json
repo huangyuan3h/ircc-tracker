@@ -1,0 +1,21 @@
+{
+  "app": {
+    "appNumber": "S300000001",
+    "lob": "PV2",
+    "status": "inProgress",
+    "lastUpdated": "2026-04-01T08:00:00.000Z"
+  },
+  "relations": [
+    {
+      "uci": "22-2222-2222",
+      "role": 1,
+      "activities": {
+        "eligibility": "completed",
+        "medical": "notStarted",
+        "biometrics": "notStarted",
+        "background": "notStarted"
+      },
+      "history": []
+    }
+  ]
+}
