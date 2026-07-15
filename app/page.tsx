@@ -116,7 +116,11 @@ export default function LoginPage() {
         </header>
 
         <section className="login-card">
-          {error ? <div className="banner error">{error}</div> : null}
+          {error ? (
+            <div className="banner error" role="alert">
+              {error}
+            </div>
+          ) : null}
 
           <form onSubmit={onSubmit} autoComplete="off">
             <div className="field">

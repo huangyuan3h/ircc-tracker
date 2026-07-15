@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { STORAGE_KEY, type SessionApp, type SessionPayload } from "@/lib/session";
 import type {
+  InterpretedEvent,
   ModuleStatus,
   OverallView,
   PersonView,
@@ -13,18 +14,40 @@ import { statusShortLabel } from "@/lib/render-report";
 /** Empty = same-origin (OpenNext Worker serves /api/ircc/*). */
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/$/, "");
 
+type ReadyPayload = {
+  report: OverallView;
+  appNumber: string;
+  apps: SessionApp[];
+};
+
 type State =
-  | { kind: "loading" }
+  | { kind: "boot" }
   | { kind: "error"; message: string }
-  | { kind: "ready"; report: OverallView; appNumber: string; apps: SessionApp[] };
+  | { kind: "ready"; data: ReadyPayload; refreshing: boolean };
+
+function compareEventsDesc(a: InterpretedEvent, b: InterpretedEvent): number {
+  return b.date.localeCompare(a.date) || b.whenLabel.localeCompare(a.whenLabel);
+}
+
+function persistSession(session: SessionPayload, apps: SessionApp[]) {
+  try {
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...session, apps } satisfies SessionPayload),
+    );
+  } catch {
+    /* ignore quota / private mode */
+  }
+}
 
 export default function ReportPage() {
   const router = useRouter();
-  const [state, setState] = useState<State>({ kind: "loading" });
+  const [state, setState] = useState<State>({ kind: "boot" });
   const [activeId, setActiveId] = useState<string | null>(null);
   /** Latest appNumber the switcher requested; survives useCallback closures. */
   const lastRequestedAppRef = useRef<string | null>(null);
-  const [, startTransition] = useTransition();
+  const requestIdRef = useRef(0);
+  const abortRef = useRef<AbortController | null>(null);
 
   const loadReport = useCallback(async () => {
     const raw = sessionStorage.getItem(STORAGE_KEY);
@@ -47,9 +70,16 @@ export default function ReportPage() {
       return;
     }
 
-    startTransition(() => {
-      setState({ kind: "loading" });
-    });
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const requestId = ++requestIdRef.current;
+
+    setState((prev) =>
+      prev.kind === "ready"
+        ? { ...prev, refreshing: true }
+        : { kind: "boot" },
+    );
 
     const requested = lastRequestedAppRef.current ?? undefined;
     try {
@@ -61,67 +91,95 @@ export default function ReportPage() {
           idToken: session.idToken,
           appNumber: requested,
         }),
+        signal: controller.signal,
       });
       const data = (await res.json()) as {
         report?: OverallView;
         appNumber?: string;
         apps?: SessionApp[];
         error?: string;
+        code?: string;
       };
+
+      if (requestId !== requestIdRef.current) return;
+
+      if (res.status === 401 || data.code === "auth") {
+        sessionStorage.removeItem(STORAGE_KEY);
+        router.replace("/");
+        return;
+      }
+
       if (!res.ok || !data.report) {
         throw new Error(data.error || "Failed to load application status.");
       }
-      startTransition(() => {
-        const apps = data.apps ?? session.apps ?? [];
-        setState({
-          kind: "ready",
-          report: data.report as OverallView,
+
+      const apps = data.apps ?? session.apps ?? [];
+      persistSession(session, apps);
+      setState({
+        kind: "ready",
+        refreshing: false,
+        data: {
+          report: data.report,
           appNumber: data.appNumber ?? "—",
           apps,
-        });
-        setActiveId(defaultActiveId(data.report as OverallView, session.uci));
+        },
       });
+      setActiveId(defaultActiveId(data.report, session.uci));
     } catch (err) {
-      startTransition(() => {
-        setState({
-          kind: "error",
-          message:
-            err instanceof Error ? err.message : "Failed to load report.",
-        });
+      if (controller.signal.aborted || requestId !== requestIdRef.current) {
+        return;
+      }
+      setState({
+        kind: "error",
+        message:
+          err instanceof Error ? err.message : "Failed to load report.",
       });
     }
-  }, [router, startTransition]);
+  }, [router]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
       void loadReport();
     }, 0);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      abortRef.current?.abort();
+    };
   }, [loadReport]);
 
   function signOut() {
+    abortRef.current?.abort();
     sessionStorage.removeItem(STORAGE_KEY);
     router.replace("/");
   }
 
+  const busy = state.kind === "boot" || (state.kind === "ready" && state.refreshing);
+  const ready = state.kind === "ready" ? state.data : null;
+  const refreshing = state.kind === "ready" && state.refreshing;
+  const showSwitcher = !!ready && ready.apps.length > 1;
+
   return (
-    <div className="report-shell fade-in">
+    <div
+      className="report-shell fade-in"
+      aria-busy={busy || undefined}
+    >
       <header className="toolbar">
         <div className="toolbar-brand">
           <span className="toolbar-mark" aria-hidden />
           <div>
             <h1>IRCC Status Report</h1>
             <div className="text-sm text-muted">
-              {state.kind === "ready"
-                ? `Application ${state.appNumber}`
+              {ready
+                ? `Application ${ready.appNumber}${refreshing ? " · Updating…" : ""}`
                 : "Loading your file…"}
             </div>
           </div>
         </div>
-        {state.kind === "ready" && state.apps.length > 1 ? (
+        {showSwitcher ? (
           <AppSwitcher
-            apps={state.apps}
-            value={state.appNumber}
+            apps={ready.apps}
+            value={ready.appNumber}
+            disabled={busy}
             onChange={(next) => {
               lastRequestedAppRef.current = next;
               void loadReport();
@@ -133,9 +191,9 @@ export default function ReportPage() {
             className="ghost"
             type="button"
             onClick={() => void loadReport()}
-            disabled={state.kind === "loading"}
+            disabled={busy}
           >
-            {state.kind === "loading" ? "Refreshing…" : "Refresh"}
+            {busy ? "Refreshing…" : "Refresh"}
           </button>
           <button className="primary" type="button" onClick={signOut}>
             Sign out
@@ -143,8 +201,8 @@ export default function ReportPage() {
         </div>
       </header>
 
-      {state.kind === "loading" ? (
-        <div className="center-state">
+      {state.kind === "boot" ? (
+        <div className="center-state" role="status" aria-live="polite">
           <div>
             <div className="spinner" />
             <div>Fetching your Tracker snapshot…</div>
@@ -156,7 +214,9 @@ export default function ReportPage() {
         <div className="center-state">
           <div className="error-card">
             <h2>Couldn’t load your report</h2>
-            <div className="banner error">{state.message}</div>
+            <div className="banner error" role="alert">
+              {state.message}
+            </div>
             <button
               className="primary"
               type="button"
@@ -168,12 +228,14 @@ export default function ReportPage() {
         </div>
       ) : null}
 
-      {state.kind === "ready" ? (
-        <ReadyView
-          report={state.report}
-          activeId={activeId}
-          onTabChange={setActiveId}
-        />
+      {ready ? (
+        <div className={refreshing ? "report-refreshing" : undefined}>
+          <ReadyView
+            report={ready.report}
+            activeId={activeId}
+            onTabChange={setActiveId}
+          />
+        </div>
       ) : null}
     </div>
   );
@@ -313,7 +375,7 @@ function OverallPanel({ report }: { report: OverallView }) {
     .flatMap((p) =>
       p.events.map((e) => ({ person: p, event: e })),
     )
-    .sort((a, b) => b.event.date.localeCompare(a.event.date))
+    .sort((a, b) => compareEventsDesc(a.event, b.event))
     .slice(0, 8);
 
   return (
@@ -450,7 +512,7 @@ function PersonPanel({ person }: { person: PersonView }) {
         ) : (
           <ol className="timeline">
             {[...person.events]
-              .sort((a, b) => b.date.localeCompare(a.date) || b.whenLabel.localeCompare(a.whenLabel))
+              .sort(compareEventsDesc)
               .map((ev) => (
                 <li
                   key={ev.id}
@@ -518,10 +580,12 @@ function AppSwitcher({
   apps,
   value,
   onChange,
+  disabled = false,
 }: {
   apps: SessionApp[];
   value: string;
   onChange: (next: string) => void;
+  disabled?: boolean;
 }) {
   return (
     <label className="app-switcher" title="Switch application">
@@ -529,6 +593,7 @@ function AppSwitcher({
       <select
         className="app-switcher-select"
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
       >
         {apps.map((a) => (

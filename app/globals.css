@@ -169,6 +169,15 @@
     @apply border-0 bg-accent text-white;
   }
 
+  .ghost:focus-visible,
+  .primary:focus-visible,
+  .tab:focus-visible,
+  .app-switcher-select:focus-visible,
+  .field input:focus-visible,
+  .submit:focus-visible {
+    @apply outline-none shadow-[0_0_0_3px_rgba(15,92,76,0.28)];
+  }
+
   .report-frame {
     @apply min-h-[calc(100vh-64px)] w-full flex-1 border-0 bg-transparent;
   }
@@ -349,7 +358,7 @@
   }
 
   .person-name {
-    @apply m-0 font-serif text-[1.25rem] whitespace-nowrap text-ink;
+    @apply m-0 truncate font-serif text-[1.25rem] text-ink;
   }
 
   .person-meta {
@@ -647,8 +656,23 @@
     @apply mx-auto mb-4 h-[34px] w-[34px] animate-spin rounded-full border-[3px] border-[rgba(15,92,76,0.18)] border-t-accent;
   }
 
+  .report-refreshing {
+    @apply pointer-events-none opacity-60 transition-opacity duration-150;
+  }
+
   .fade-in {
     animation: fadeIn 0.35s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in,
+  .spinner {
+    animation: none !important;
+  }
+
+  .report-refreshing {
+    transition: none !important;
   }
 }
 
