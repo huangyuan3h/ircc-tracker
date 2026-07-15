@@ -560,11 +560,20 @@
   }
 
   .event-list {
-    @apply grid list-none gap-[0.5rem] p-0;
+    @apply m-0 grid list-none gap-2 p-0;
   }
 
   .event-row {
-    @apply grid grid-cols-[auto_1fr] items-start gap-3 rounded-[12px] border border-line bg-[#f6f9f7] px-[0.75rem] py-[0.55rem];
+    @apply grid grid-cols-[6.75rem_minmax(0,1fr)] items-center gap-3 rounded-[14px] border border-line bg-[#f6f9f7] px-3 py-2.5 transition-[background-color,border-color] duration-150;
+  }
+
+  .event-row:hover {
+    @apply border-[rgba(15,92,76,0.22)] bg-white;
+  }
+
+  /* Fixed-width tag column so titles line up vertically. */
+  .event-tag {
+    @apply box-border w-full min-w-0 max-w-none justify-center truncate rounded-[10px] px-2 py-[0.35rem] text-center text-[0.65rem] tracking-[0.06em];
   }
 
   .event-body {
@@ -572,11 +581,19 @@
   }
 
   .event-title {
-    @apply text-[0.92rem] font-semibold text-ink;
+    @apply truncate text-[0.92rem] font-semibold leading-snug text-[#142c27];
   }
 
   .event-meta {
-    @apply text-[0.78rem] text-muted;
+    @apply mt-0.5 flex min-w-0 items-center gap-1.5 text-[0.78rem] text-[#4f655e];
+  }
+
+  .event-person {
+    @apply truncate font-medium text-[#3d534c];
+  }
+
+  .event-sep {
+    @apply shrink-0 opacity-50;
   }
 
   .empty {

@@ -364,13 +364,20 @@ function OverallPanel({ report }: { report: OverallView }) {
                   key={`${person.id}-${event.id}`}
                   className={`event-row event-${event.color}`}
                 >
-                  <span className={`ev-badge ev-${event.color}`}>
+                  <span
+                    className={`ev-badge event-tag ev-${event.color}`}
+                    title={event.badge}
+                  >
                     {event.badge}
                   </span>
                   <div className="event-body">
                     <div className="event-title">{event.title}</div>
                     <div className="event-meta">
-                      {person.fullName} · {event.date}
+                      <span className="event-person">{person.fullName}</span>
+                      <span className="event-sep" aria-hidden>
+                        ·
+                      </span>
+                      <time dateTime={event.date}>{event.date}</time>
                     </div>
                   </div>
                 </li>
