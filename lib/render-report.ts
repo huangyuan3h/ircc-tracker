@@ -268,6 +268,8 @@ function interpretEvent(h: HistoryEvent): Omit<InterpretedEvent, "id" | "date" |
   if (h.actStatus != null) {
     code =
       REF.status_codes[String(h.actStatus)] ?? `Internal code ${h.actStatus}`;
+    // Fold status detail into body so the card header keeps a single primary badge.
+    body = body ? `${body}\n${code}` : code;
   }
 
   return { category, title, body, badge, color, code };

@@ -467,14 +467,12 @@ function PersonPanel({ person }: { person: PersonView }) {
                           <span className="timeline-time"> · {ev.whenLabel}</span>
                         ) : null}
                       </time>
-                      <div className="timeline-meta">
-                        <span className="ev-badge">{ev.badge}</span>
-                        {ev.code ? (
-                          <span className="timeline-code" title={ev.code}>
-                            {ev.code}
-                          </span>
-                        ) : null}
-                      </div>
+                      <span
+                        className="ev-badge timeline-badge"
+                        title={ev.code ? `${ev.badge} · ${ev.code}` : ev.badge}
+                      >
+                        {ev.badge}
+                      </span>
                     </div>
                     <h4 className="timeline-title">{ev.title}</h4>
                     {ev.body ? (

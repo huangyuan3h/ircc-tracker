@@ -478,40 +478,71 @@
     @apply inline-flex items-center rounded-full bg-[#4f655e] px-[0.5rem] py-[0.08rem] text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-white;
   }
 
+  /* Primary timeline category chip — eye-catching but still secondary to the title. */
+  .timeline-badge {
+    @apply shrink-0 rounded-[10px] px-2.5 py-[0.28rem] text-[0.68rem] font-bold tracking-[0.08em] shadow-[0_4px_12px_rgba(15,44,36,0.12)] ring-2 ring-white/80;
+  }
+
+  .timeline-security .timeline-badge {
+    @apply bg-[#9b2c2c] shadow-[0_6px_16px_rgba(155,44,44,0.28)];
+  }
+  .timeline-medical .timeline-badge {
+    @apply bg-[#0b6e99] shadow-[0_6px_16px_rgba(11,110,153,0.28)];
+  }
+  .timeline-eligibility .timeline-badge {
+    @apply bg-[#5e3aa0] shadow-[0_6px_16px_rgba(94,58,160,0.28)];
+  }
+  .timeline-biometrics .timeline-badge {
+    @apply bg-[#8a5a00] shadow-[0_6px_16px_rgba(138,90,0,0.28)];
+  }
+  .timeline-background .timeline-badge {
+    @apply bg-[#0f5c4c] shadow-[0_6px_16px_rgba(15,92,76,0.28)];
+  }
+  .timeline-document .timeline-badge {
+    @apply bg-[#1f4a78] shadow-[0_6px_16px_rgba(31,74,120,0.28)];
+  }
+  .timeline-system .timeline-badge {
+    @apply bg-[#334155] shadow-[0_6px_16px_rgba(51,65,85,0.28)];
+  }
+  .timeline-neutral .timeline-badge,
+  .timeline-other .timeline-badge {
+    @apply bg-[#3d534c] shadow-[0_6px_16px_rgba(61,83,76,0.22)];
+  }
+
   /* Used by both timeline cards and Overall "Latest events" rows. */
   .ev-security,
-  .timeline-security .ev-badge {
+  .timeline-security .ev-badge:not(.timeline-badge) {
     @apply bg-[#9b2c2c];
   }
   .ev-medical,
-  .timeline-medical .ev-badge {
+  .timeline-medical .ev-badge:not(.timeline-badge) {
     @apply bg-[#0b6e99];
   }
   .ev-eligibility,
-  .timeline-eligibility .ev-badge {
+  .timeline-eligibility .ev-badge:not(.timeline-badge) {
     @apply bg-[#5e3aa0];
   }
   .ev-biometrics,
-  .timeline-biometrics .ev-badge {
+  .timeline-biometrics .ev-badge:not(.timeline-badge) {
     @apply bg-[#8a5a00];
   }
   .ev-background,
-  .timeline-background .ev-badge {
+  .timeline-background .ev-badge:not(.timeline-badge) {
     @apply bg-[#0f5c4c];
   }
   .ev-document,
-  .timeline-document .ev-badge {
+  .timeline-document .ev-badge:not(.timeline-badge) {
     @apply bg-[#1f4a78];
   }
   .ev-system,
-  .timeline-system .ev-badge {
+  .timeline-system .ev-badge:not(.timeline-badge) {
     @apply bg-[#475569];
   }
   .ev-neutral,
   .ev-other,
   .ev-muted,
-  .timeline-neutral .ev-badge,
-  .timeline-other .ev-badge {
+  .timeline-neutral .ev-badge:not(.timeline-badge),
+  .timeline-other .ev-badge:not(.timeline-badge) {
     @apply bg-[#4f655e];
   }
 
@@ -552,11 +583,7 @@
   }
 
   .timeline-body {
-    @apply mt-1.5 text-[0.86rem] leading-relaxed text-[#4f655e];
-  }
-
-  .timeline-code {
-    @apply inline-block max-w-[28ch] truncate rounded-full bg-[rgba(79,101,94,0.12)] px-[0.5rem] py-[0.08rem] text-[0.7rem] text-[#4f655e] cursor-help;
+    @apply mt-1.5 space-y-1 text-[0.86rem] leading-relaxed text-[#4f655e];
   }
 
   .event-list {
