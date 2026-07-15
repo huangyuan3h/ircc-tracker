@@ -9,7 +9,7 @@
     "preview": "npm run build:cf && wrangler pages dev .vercel/output/static --compatibility-date=2025-01-15 --compatibility-flag=nodejs_compat",
     "start": "next start",
     "lint": "eslint .",
-    "test": "tsx --test tests/render.test.ts tests/api.test.ts",
+    "test": "tsx --test tests/*.test.ts",
     "test:bash": "bats tests/ircc-check.bats",
     "deploy": "npm run build:cf && wrangler deploy",
     "deploy:preview": "npm run build:cf && wrangler deploy --keep-vars",

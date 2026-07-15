@@ -22,8 +22,8 @@ export default function ReportPage() {
   const router = useRouter();
   const [state, setState] = useState<State>({ kind: "loading" });
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [selectedApp, setSelectedApp] = useState<string | null>(null);
-  const activeAppNumberRef = useRef<string | null>(null);
+  /** Latest appNumber the switcher requested; survives useCallback closures. */
+  const lastRequestedAppRef = useRef<string | null>(null);
   const [, startTransition] = useTransition();
 
   const loadReport = useCallback(async () => {
@@ -51,7 +51,7 @@ export default function ReportPage() {
       setState({ kind: "loading" });
     });
 
-    const requested = activeAppNumberRef.current ?? undefined;
+    const requested = lastRequestedAppRef.current ?? undefined;
     try {
       const res = await fetch(`${API_BASE}/api/ircc/check`, {
         method: "POST",
@@ -123,8 +123,7 @@ export default function ReportPage() {
             apps={state.apps}
             value={state.appNumber}
             onChange={(next) => {
-              activeAppNumberRef.current = next;
-              setSelectedApp(next);
+              lastRequestedAppRef.current = next;
               void loadReport();
             }}
           />
@@ -504,7 +503,8 @@ function formatAppLabel(a: SessionApp): string {
   const pa = [a.paFirstName, a.paLastName].filter(Boolean).join(" ").trim();
   const type = a.appType ? ` · ${a.appType}` : "";
   const status = a.status ? ` (${a.status})` : "";
-  return `${a.appNum}${type}${status}${pa ? ` — ${pa}` : ""}`;
+  const updated = a.lastUpdated ? ` · updated ${String(a.lastUpdated).slice(0, 10)}` : "";
+  return `${a.appNum}${type}${updated}${status}${pa ? ` — ${pa}` : ""}`;
 }
 
 function AppSwitcher({

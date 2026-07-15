@@ -15,8 +15,6 @@ type Body = {
   password?: string;
   idToken?: string;
   appNumber?: string;
-  /** Optional known apps snapshot to resolve appNumber from without an extra round-trip. */
-  knownApps?: { appNum: string }[];
 };
 
 export async function POST(req: Request) {
