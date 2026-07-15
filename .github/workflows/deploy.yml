@@ -45,8 +45,31 @@ jobs:
           # Baked into the client bundle at build time; empty = same-origin /api.
           NEXT_PUBLIC_API_BASE: ""
 
+      - name: Verify Cloudflare secrets shape
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          account="${CLOUDFLARE_ACCOUNT_ID:-}"
+          token="${CLOUDFLARE_API_TOKEN:-}"
+          if [ -z "$account" ] || [ -z "$token" ]; then
+            echo "::error::Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN secret."
+            exit 1
+          fi
+          # Account IDs are 32 lowercase/uppercase hex chars — not an API token (cfat_...).
+          if ! [[ "$account" =~ ^[0-9a-fA-F]{32}$ ]]; then
+            echo "::error::CLOUDFLARE_ACCOUNT_ID looks invalid (len=${#account}). Expected 32 hex chars from the Cloudflare dashboard sidebar. Do not paste the API token here."
+            exit 1
+          fi
+          if [[ "$token" =~ ^[0-9a-fA-F]{32}$ ]]; then
+            echo "::error::CLOUDFLARE_API_TOKEN looks like an Account ID. Secrets may be swapped."
+            exit 1
+          fi
+          echo "Secrets look well-formed (account_id len=${#account}, token len=${#token})."
+
       - name: Deploy Worker
-        run: npx wrangler deploy
+        run: npx wrangler deploy --config wrangler.toml
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
