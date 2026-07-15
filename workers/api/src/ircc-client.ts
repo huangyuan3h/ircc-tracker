@@ -1,19 +1,22 @@
-// Shared IRCC client used by both Next.js (browser/server) and the Cloudflare Worker.
-// Kept dependency-free so it can run on the Workers runtime with nodejs_compat.
+function readEnv(name: string): string | undefined {
+  const env =
+    typeof process !== "undefined"
+      ? (process as { env?: Record<string, string | undefined> }).env
+      : undefined;
+  return env?.[name];
+}
 
 export const COGNITO_URL =
-  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.COGNITO_URL ??
-  "https://cognito-idp.ca-central-1.amazonaws.com/";
+  readEnv("COGNITO_URL") ?? "https://cognito-idp.ca-central-1.amazonaws.com/";
 export const COGNITO_CLIENT_ID =
-  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.COGNITO_CLIENT_ID ??
-  "3cfutv5ffd1i622g1tn6vton5r";
+  readEnv("COGNITO_CLIENT_ID") ?? "3cfutv5ffd1i622g1tn6vton5r";
 export const IRCC_API_URL =
-  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.IRCC_API_URL ??
+  readEnv("IRCC_API_URL") ??
   "https://api.ircc-tracker-suivi.apps.cic.gc.ca/user";
 
 /** Mimic the official Tracker SPA so Cognito WAF does not block datacenter egress. */
-export const PORTAL_ORIGIN = "https://ircc-tracker-suivi.apps.cic.gc.ca";
-export const PORTAL_UA =
+const PORTAL_ORIGIN = "https://ircc-tracker-suivi.apps.cic.gc.ca";
+const PORTAL_UA =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
 
 export type ApiErrorCode =
@@ -195,6 +198,7 @@ export async function cognitoLogin(
   return token;
 }
 
+/** Resolve a Bearer token from an existing IdToken or by password login. */
 export async function resolveIdToken(opts: {
   idToken?: string;
   uci?: string;
@@ -298,4 +302,27 @@ export function pickDefaultAppNumber(apps: TrackerAppSummary[]): string {
     );
   }
   return first;
+}
+
+export function pickAppNumberFor(
+  apps: TrackerAppSummary[],
+  requested?: string | null,
+): string {
+  if (requested) {
+    const exact = apps.find((a) => a.appNum === requested);
+    if (exact) return exact.appNum;
+  }
+  return pickDefaultAppNumber(apps);
+}
+
+export function summaryFromApps(apps: TrackerAppSummary[]) {
+  return apps.map((a) => ({
+    appNum: a.appNum,
+    appType: a.appType,
+    status: a.status,
+    lastUpdated: a.lastUpdated,
+    paFirstName: a.paFirstName,
+    paLastName: a.paLastName,
+    role: a.role,
+  }));
 }

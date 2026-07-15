@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { STORAGE_KEY, type SessionPayload } from "@/lib/session";
+import { STORAGE_KEY, type SessionApp, type SessionPayload } from "@/lib/session";
 import type {
   ModuleStatus,
   OverallView,
@@ -16,12 +16,14 @@ const API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/$/, "");
 type State =
   | { kind: "loading" }
   | { kind: "error"; message: string }
-  | { kind: "ready"; report: OverallView; appNumber: string };
+  | { kind: "ready"; report: OverallView; appNumber: string; apps: SessionApp[] };
 
 export default function ReportPage() {
   const router = useRouter();
   const [state, setState] = useState<State>({ kind: "loading" });
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [selectedApp, setSelectedApp] = useState<string | null>(null);
+  const activeAppNumberRef = useRef<string | null>(null);
   const [, startTransition] = useTransition();
 
   const loadReport = useCallback(async () => {
@@ -49,6 +51,7 @@ export default function ReportPage() {
       setState({ kind: "loading" });
     });
 
+    const requested = activeAppNumberRef.current ?? undefined;
     try {
       const res = await fetch(`${API_BASE}/api/ircc/check`, {
         method: "POST",
@@ -56,21 +59,25 @@ export default function ReportPage() {
         body: JSON.stringify({
           uci: session.uci,
           idToken: session.idToken,
+          appNumber: requested,
         }),
       });
       const data = (await res.json()) as {
         report?: OverallView;
         appNumber?: string;
+        apps?: SessionApp[];
         error?: string;
       };
       if (!res.ok || !data.report) {
         throw new Error(data.error || "Failed to load application status.");
       }
       startTransition(() => {
+        const apps = data.apps ?? session.apps ?? [];
         setState({
           kind: "ready",
           report: data.report as OverallView,
           appNumber: data.appNumber ?? "—",
+          apps,
         });
         setActiveId(defaultActiveId(data.report as OverallView, session.uci));
       });
@@ -111,6 +118,17 @@ export default function ReportPage() {
             </div>
           </div>
         </div>
+        {state.kind === "ready" && state.apps.length > 1 ? (
+          <AppSwitcher
+            apps={state.apps}
+            value={state.appNumber}
+            onChange={(next) => {
+              activeAppNumberRef.current = next;
+              setSelectedApp(next);
+              void loadReport();
+            }}
+          />
+        ) : null}
         <div className="toolbar-actions">
           <button
             className="ghost"
@@ -479,5 +497,39 @@ function ModuleCard({ m }: { m: ModuleStatus }) {
       <span className="module-cell-label">{m.label}</span>
       <span className="module-cell-value">{short}</span>
     </div>
+  );
+}
+
+function formatAppLabel(a: SessionApp): string {
+  const pa = [a.paFirstName, a.paLastName].filter(Boolean).join(" ").trim();
+  const type = a.appType ? ` · ${a.appType}` : "";
+  const status = a.status ? ` (${a.status})` : "";
+  return `${a.appNum}${type}${status}${pa ? ` — ${pa}` : ""}`;
+}
+
+function AppSwitcher({
+  apps,
+  value,
+  onChange,
+}: {
+  apps: SessionApp[];
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  return (
+    <label className="app-switcher" title="Switch application">
+      <span className="app-switcher-label">Application</span>
+      <select
+        className="app-switcher-select"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {apps.map((a) => (
+          <option key={a.appNum} value={a.appNum}>
+            {formatAppLabel(a)}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

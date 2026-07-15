@@ -153,6 +153,18 @@
     @apply flex flex-wrap gap-[0.55rem];
   }
 
+  .app-switcher {
+    @apply flex min-w-0 flex-1 items-center gap-2 rounded-full border border-line bg-white/70 px-[0.9rem] py-[0.4rem] text-sm md:flex-none;
+  }
+
+  .app-switcher-label {
+    @apply text-muted text-xs uppercase tracking-wide;
+  }
+
+  .app-switcher-select {
+    @apply w-full min-w-0 appearance-none bg-transparent font-semibold text-ink outline-none md:w-auto;
+  }
+
   .ghost,
   .primary {
     @apply cursor-pointer rounded-full px-[0.95rem] py-[0.55rem] font-semibold;

@@ -1,5 +1,5 @@
 {
-  "_comment": "Edit here to enrich timeline tooltips. Consumed by lib/render-report.jq.",
+  "_comment": "Edit here to enrich timeline tooltips. Consumed by lib/render-report.ts.",
 
   "system_events": {
     "5":   { "label": "Express Entry draw #5",   "date": "2015-09-18", "desc": "CRS cutoff 481 (Express Entry debut series)." },
@@ -20,13 +20,39 @@
 
   "letters": {
     "IMM10003": { "label": "Acknowledgement of Information (AOI)", "desc": "Internal acknowledgement; not a user-facing form." },
+
     "IMM1017":  { "label": "Medical Report (IMM 1017E)",            "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm1017.html", "desc": "Panel physician uses this to record your immigration medical exam. Issued by IRCC after an upfront medical request." },
     "IMM1017B": { "label": "Upfront Medical Report",               "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm1017.html", "desc": "Used when you book your medical before IRCC asks (Express Entry / work / study)." },
+
+    "IMM1208":  { "label": "Temporary Resident Visa Approval Letter", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada/visitor-visa.html", "desc": "Notification of TRV (visitor visa) approval. Issued by IRCC once your temporary resident application is approved." },
+    "IMM1209":  { "label": "Temporary Resident Visa Letter (Notice)", "desc": "Generic TRV-related correspondence from IRCC; can indicate a decision, request, or refusal notice. Check the letter body for the exact outcome." },
+    "IMM5257":  { "label": "Application for Temporary Resident Visa", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5257.html", "desc": "TRV / temporary resident application form used by visitors, including business visitors." },
+    "IMM5257B": { "label": "Application for Temporary Resident Visa — Business", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5257.html", "desc": "Business visitor TRV application form." },
+    "IMM5257E": { "label": "Application for Temporary Resident Visa — Extended Stay", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5257.html", "desc": "TRV form for stays extending beyond the default visit period." },
+    "IMM5409":  { "label": "Statutory Declaration of Common-Law Union", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5409.html", "desc": "Used when common-law partners need to declare their relationship." },
+    "IMM5476":  { "label": "Use of Representative (Visitor / TRV)",   "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5476.html", "desc": "Authorizes a representative to act on your behalf for a TRV or study/work permit file." },
+    "IMM5645":  { "label": "Family Information (TRV / study / work)", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5645.html", "desc": "Family info form for temporary residence applicants." },
+
+    "IMM1102":  { "label": "Student Permit Letter (Generic)",       "desc": "Generic study permit correspondence from IRCC; read the body for decision / request outcome." },
+    "IMM1294":  { "label": "Study Permit / Study Permit Extension Approval", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/study-canada/study-permit.html", "desc": "Official approval notification for a study permit (new / extension). Used for both DLI-based study permit and program changes." },
+    "IMM5001":  { "label": "Application for Study Permit Made Outside Canada", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5001.html", "desc": "Study permit application form for applicants applying from outside Canada." },
+    "IMM5009":  { "label": "Application for Study Permit Made Inside Canada",  "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5009.html", "desc": "Study permit application form for applicants already in Canada." },
+    "IMM5509":  { "label": "Application to Renew/Extend Study Permit", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5509.html", "desc": "Used to extend or change conditions of an existing study permit from inside Canada." },
+    "IMM5709":  { "label": "Application to Change Conditions / Extend Stay (Generic TRV)", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5709.html", "desc": "Generic TRV application used to extend a stay or change conditions (visitor record, restoration of status)." },
+    "IMM5710":  { "label": "Application to Change Conditions / Extend Stay (Study)", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5710.html", "desc": "Used for changing study permit conditions or extending stay from inside Canada." },
+    "IMM5740":  { "label": "Application for Restoration of Temporary Resident Status", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5740.html", "desc": "Restores your temporary resident status if it lapsed before you applied to extend." },
+    "IMM5928":  { "label": "Application for Temporary Resident Visa — Student (TRV-S)", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5928.html", "desc": "TRV form for study permit holders travelling outside Canada and re-entering." },
+
+    "IMM1102W": { "label": "Work Permit Letter (Generic)", "desc": "Generic work permit correspondence from IRCC; read the body for decision / request outcome." },
+    "IMM1295":  { "label": "Work Permit / Extension Approval", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/work-canada/permit.html", "desc": "Official approval notification for an employer-specific or open work permit (new / extension)." },
+    "IMM5488":  { "label": "Application for Work Permit (Outside)", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5488.html", "desc": "Work permit application form used when applying from outside Canada." },
+    "IMM5711":  { "label": "Application to Extend Stay on a Work Permit (Inside)", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5711.html", "desc": "Used to extend a work permit from inside Canada." },
+    "IMM5993":  { "label": "Application for Interim Work Permit / Letter", "desc": "Interim / bridging work permit notification issued while IRCC processes an open work permit." },
+    "IMM5974":  { "label": "Portal Notification – Temporary Resident Work Permit Application", "desc": "Portal message confirming submission of a temporary resident work permit application via IRCC Secure Account." },
+
     "IMM1344":  { "label": "Application to Sponsor, Undertaking",   "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm1344.html", "desc": "Sponsorship application used by the person sponsoring a family member." },
     "IMM5406":  { "label": "Additional Family Information",         "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5406.html", "desc": "Required for permanent residence: lists immediate family members of every applicant 18+." },
-    "IMM5409":  { "label": "Statutory Declaration of Common-Law Union", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5409.html", "desc": "Used when common-law partners need to declare their relationship." },
     "IMM5532":  { "label": "Relationship / Sponsorship Evaluation", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5532.html", "desc": "Documents relationship between sponsor and sponsored family member." },
-    "IMM5645":  { "label": "Family Information (TRV / study / work)", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5645.html", "desc": "Family info form for temporary residence applicants." },
     "IMM5669":  { "label": "Schedule A – Background / Declaration", "desc": "Schedule to IMM 0008 for permanent residence." },
     "IMM5670":  { "label": "Sponsor Undertaking (Group of Five)",   "desc": "Used by community / group-of-five sponsorship applications." },
     "IMM5756":  { "label": "Sponsor Document Checklist (spouse/partner)", "desc": "Document checklist for spouses, common-law partners, conjugal partners and dependent children." },
@@ -36,7 +62,13 @@
     "IMM5787":  { "label": "Express Entry Next Steps Guide",        "desc": "Guidance on what to do after creating or updating an EE profile." },
     "IMM5791":  { "label": "Invitation to Apply (ITA)",             "desc": "Official EE invitation. You have 60 days to file a complete application." },
     "IMM5793":  { "label": "AOR – Application Receipt (EE)",        "desc": "Acknowledgement of Receipt confirming IRCC got your EE PR application." },
-    "IMM5794":  { "label": "AOR – Application Receipt (EE)",        "desc": "Acknowledgement of Receipt confirming IRCC got your EE PR application." }
+    "IMM5794":  { "label": "AOR – Application Receipt (EE)",        "desc": "Acknowledgement of Receipt confirming IRCC got your EE PR application." },
+
+    "IMM1209R": { "label": "Visitor Visa Refusal Letter", "desc": "Generic TRV refusal letter from IRCC; details in body. Common refusal grounds: purpose of visit, ties to home country, financial support." },
+    "IMM1214":  { "label": "Refusal Letter – Temporary Resident Application", "desc": "Official refusal letter for temporary resident (visitor / TRV / work / study) applications." },
+    "IMM1234":  { "label": "Visitor Record / Conditions Decision Letter", "desc": "Notification of conditions imposed on a temporary resident (e.g., visitor record, study permit conditions)." },
+    "IMM1414":  { "label": "Procedural Fairness Letter", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm1414.html", "desc": "Gives the applicant an opportunity to respond to concerns before a final decision." },
+    "IMM5008":  { "label": "Letter of Introduction / Port of Entry Letter", "desc": "Confirmation letter for an applicant whose application was approved but requires landing at a Port of Entry." }
   },
 
   "status_codes": {
@@ -44,7 +76,10 @@
     "3":  "Activity type 3: Medical examination activity.",
     "17": "Security review started (comprehensive background / criminality / security screening).",
     "33": "Medical exam initiated OR security review completed (depending on key).",
-    "108": "Medical exam completed and results received."
+    "108": "Medical exam completed and results received.",
+    "140": "Port of Entry letter issued (for landing at POE).",
+    "171": "Refused — application returned as incomplete.",
+    "172": "Withdrawn / refused — application not approved."
   },
 
   "category_colors": {

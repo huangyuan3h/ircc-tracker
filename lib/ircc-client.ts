@@ -303,3 +303,26 @@ export function pickDefaultAppNumber(apps: TrackerAppSummary[]): string {
   }
   return first;
 }
+
+export function pickAppNumberFor(
+  apps: TrackerAppSummary[],
+  requested?: string | null,
+): string {
+  if (requested) {
+    const exact = apps.find((a) => a.appNum === requested);
+    if (exact) return exact.appNum;
+  }
+  return pickDefaultAppNumber(apps);
+}
+
+export function summaryFromApps(apps: TrackerAppSummary[]) {
+  return apps.map((a) => ({
+    appNum: a.appNum,
+    appType: a.appType,
+    status: a.status,
+    lastUpdated: a.lastUpdated,
+    paFirstName: a.paFirstName,
+    paLastName: a.paLastName,
+    role: a.role,
+  }));
+}

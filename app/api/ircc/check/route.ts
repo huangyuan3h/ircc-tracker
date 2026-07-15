@@ -3,7 +3,7 @@ import {
   IrccApiError,
   fetchApplicationDetails,
   fetchProfileSummary,
-  pickDefaultAppNumber,
+  pickAppNumberFor,
   resolveIdToken,
 } from "@/lib/ircc-client";
 import { renderReport } from "@/lib/render-report";
@@ -15,13 +15,15 @@ type Body = {
   password?: string;
   idToken?: string;
   appNumber?: string;
+  /** Optional known apps snapshot to resolve appNumber from without an extra round-trip. */
+  knownApps?: { appNum: string }[];
 };
 
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Body;
     const uci = (body.uci ?? "").trim();
-    let appNumber = (body.appNumber ?? "").trim();
+    let requestedAppNumber = (body.appNumber ?? "").trim();
 
     if (!uci) {
       throw new IrccApiError("usage", "uci is required.", 400);
@@ -33,10 +35,11 @@ export async function POST(req: Request) {
       password: body.password,
     });
 
-    if (!appNumber) {
-      const { apps } = await fetchProfileSummary(token);
-      appNumber = pickDefaultAppNumber(apps);
-    }
+    const { apps } = await fetchProfileSummary(token);
+    const appNumber = pickAppNumberFor(
+      apps,
+      requestedAppNumber || undefined,
+    );
 
     const details = await fetchApplicationDetails(token, appNumber, uci);
     const report = renderReport(details, {
@@ -45,7 +48,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { appNumber, report },
+      { appNumber, apps, report },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (err) {

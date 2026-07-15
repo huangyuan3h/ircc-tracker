@@ -79,6 +79,7 @@ export default function LoginPage() {
       const payload: SessionPayload = {
         uci: uci.trim(),
         idToken,
+        apps: data.apps as SessionPayload["apps"],
       };
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       if (remember) {
