@@ -556,7 +556,7 @@
   }
 
   .timeline-code {
-    @apply inline-block max-w-[28ch] truncate rounded-full bg-[rgba(79,101,94,0.12)] px-[0.5rem] py-[0.08rem] text-[0.7rem] text-[#4f655e];
+    @apply inline-block max-w-[28ch] truncate rounded-full bg-[rgba(79,101,94,0.12)] px-[0.5rem] py-[0.08rem] text-[0.7rem] text-[#4f655e] cursor-help;
   }
 
   .event-list {
