@@ -1,23 +1,21 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { cognitoLogin, IrccApiError } from "@/lib/ircc-client";
+import { STORAGE_KEY, type SessionPayload } from "@/lib/session";
 
-const STORAGE_KEY = "ircc-checker-session";
+/** Empty = same-origin (OpenNext Worker serves /api/ircc/*). */
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE ?? "").replace(/\/$/, "");
 
-type SessionPayload = {
-  uci: string;
-  password: string;
-  remember: boolean;
-};
+const REMEMBER_KEY = "ircc-checker-remember-uci";
 
 function loadRememberedUci(): string {
-  if (typeof window === "undefined") return "";
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(REMEMBER_KEY);
     if (!raw) return "";
-    const parsed = JSON.parse(raw) as { uci?: string; remember?: boolean };
-    return parsed.remember ? String(parsed.uci ?? "") : "";
+    const parsed = JSON.parse(raw) as { uci?: string };
+    return String(parsed.uci ?? "");
   } catch {
     return "";
   }
@@ -25,12 +23,23 @@ function loadRememberedUci(): string {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [uci, setUci] = useState(loadRememberedUci);
+  const [uci, setUci] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
+  const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* ignore */
+    }
+    const remembered = loadRememberedUci();
+    if (!remembered) return;
+    setUci(remembered);
+    setRemember(true);
+  }, []);
 
   const uciValid = useMemo(() => /^[\d-]{5,}$/.test(uci.trim()), [uci]);
 
@@ -49,10 +58,12 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/ircc/list", {
+      const idToken = await cognitoLogin(uci.trim(), password);
+
+      const res = await fetch(`${API_BASE}/api/ircc/list`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ uci: uci.trim(), password }),
+        body: JSON.stringify({ uci: uci.trim(), idToken }),
       });
       const data = (await res.json()) as {
         apps?: unknown[];
@@ -67,22 +78,27 @@ export default function LoginPage() {
 
       const payload: SessionPayload = {
         uci: uci.trim(),
-        password,
-        remember,
+        idToken,
       };
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       if (remember) {
         localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify({ uci: payload.uci, remember: true }),
+          REMEMBER_KEY,
+          JSON.stringify({ uci: payload.uci }),
         );
       } else {
-        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(REMEMBER_KEY);
       }
 
       router.push("/report");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed.");
+      const message =
+        err instanceof IrccApiError
+          ? err.message
+          : err instanceof Error
+            ? err.message
+            : "Login failed.";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -90,55 +106,26 @@ export default function LoginPage() {
 
   return (
     <main className="shell">
-      <div className="login-grid fade-in">
-        <section className="brand-panel">
-          <p className="eyebrow">Canada · IRCC Tracker</p>
-          <h1>See your file clearly, in one quiet place.</h1>
-          <p className="brand-copy">
-            Sign in with your Application Status Tracker UCI and password. We
-            fetch your latest modules, security nodes, and letters — then render
-            a readable report.
+      <div className="login-stage fade-in">
+        <header className="login-brand">
+          <p className="login-brand-name">IRCC Tracker</p>
+          <p className="login-brand-line">
+            Your Application Status Tracker, rendered cleanly.
           </p>
-          <ul className="feature-list">
-            <li>
-              <span className="dot" />
-              <div>
-                <strong>Auto application pick</strong>
-                <div>Uses the first app from your profile summary.</div>
-              </div>
-            </li>
-            <li>
-              <span className="dot alt" />
-              <div>
-                <strong>Security-aware timeline</strong>
-                <div>Highlights Security / Medical / letter events.</div>
-              </div>
-            </li>
-            <li>
-              <span className="dot" />
-              <div>
-                <strong>Personal use only</strong>
-                <div>Credentials stay in this session; do not share the URL.</div>
-              </div>
-            </li>
-          </ul>
-        </section>
+        </header>
 
-        <section className="form-panel">
-          <h2>Sign in</h2>
-          <p className="lead">UCI + Tracker password — same as the official portal.</p>
-
+        <section className="login-card">
           {error ? <div className="banner error">{error}</div> : null}
 
-          <form onSubmit={onSubmit}>
+          <form onSubmit={onSubmit} autoComplete="off">
             <div className="field">
               <label htmlFor="uci">UCI number</label>
               <input
                 id="uci"
                 name="uci"
                 inputMode="numeric"
-                autoComplete="username"
-                placeholder="1139609588"
+                autoComplete="off"
+                placeholder="Tracker UCI"
                 value={uci}
                 onChange={(e) => setUci(e.target.value)}
                 pattern="[\d-]{5,}"
@@ -148,25 +135,16 @@ export default function LoginPage() {
 
             <div className="field">
               <label htmlFor="password">Tracker password</label>
-              <div className="password-wrap">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="off"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
 
             <div className="row">
@@ -186,8 +164,8 @@ export default function LoginPage() {
           </form>
 
           <p className="hint">
-            Hobby / personal demo. Password is sent to your own Vercel API route
-            and never written into the HTML report.
+            Same credentials as the official portal. Leave fields blank when
+            sharing screenshots.
           </p>
         </section>
       </div>

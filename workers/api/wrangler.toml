@@ -1,0 +1,14 @@
+name = "ircc-tracker-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-15"
+compatibility_flags = ["nodejs_compat"]
+
+# Optional standalone API Worker. Production SPA uses same-origin routes on
+# ircc-tracker.it-t.xyz instead — this Worker is kept for local/debugging only.
+# No custom domain: avoids locked Worker DNS records on it-t.xyz.
+
+[observability]
+enabled = true
+
+[vars]
+ALLOWED_ORIGINS = "https://ircc-tracker.it-t.xyz"

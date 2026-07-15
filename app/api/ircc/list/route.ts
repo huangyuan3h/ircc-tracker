@@ -1,40 +1,37 @@
 import { NextResponse } from "next/server";
 import {
   IrccApiError,
-  cognitoLogin,
   fetchProfileSummary,
+  resolveIdToken,
 } from "@/lib/ircc-client";
 
-export const runtime = "nodejs";
-export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-type Body = { uci?: string; password?: string };
+type Body = {
+  uci?: string;
+  password?: string;
+  idToken?: string;
+};
 
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Body;
     const uci = (body.uci ?? "").trim();
-    const password = body.password ?? "";
 
-    if (!uci || !password) {
-      throw new IrccApiError(
-        "usage",
-        "Both uci and password are required.",
-        400,
-      );
+    if (!uci) {
+      throw new IrccApiError("usage", "uci is required.", 400);
     }
 
-    const token = await cognitoLogin(uci, password);
+    const token = await resolveIdToken({
+      idToken: body.idToken,
+      uci,
+      password: body.password,
+    });
     const { apps } = await fetchProfileSummary(token);
 
     return NextResponse.json(
       { apps },
-      {
-        headers: {
-          "Cache-Control": "no-store",
-        },
-      },
+      { headers: { "Cache-Control": "no-store" } },
     );
   } catch (err) {
     if (err instanceof IrccApiError) {
@@ -43,9 +40,11 @@ export async function POST(req: Request) {
         { status: err.status, headers: { "Cache-Control": "no-store" } },
       );
     }
-    console.error(err);
+    const message = err instanceof Error ? err.message : String(err);
+    const stack = err instanceof Error ? err.stack : undefined;
+    console.error("list route failed", message, stack);
     return NextResponse.json(
-      { error: "Unexpected server error.", code: "query" },
+      { error: `Unexpected server error: ${message}`, code: "query" },
       { status: 500, headers: { "Cache-Control": "no-store" } },
     );
   }

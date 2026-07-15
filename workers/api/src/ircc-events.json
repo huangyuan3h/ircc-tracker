@@ -1,0 +1,60 @@
+{
+  "_comment": "Edit here to enrich timeline tooltips. Consumed by lib/render-report.jq.",
+
+  "system_events": {
+    "5":   { "label": "Express Entry draw #5",   "date": "2015-09-18", "desc": "CRS cutoff 481 (Express Entry debut series)." },
+    "9":   { "label": "Express Entry draw #9",   "date": "2015-11-27", "desc": "CRS cutoff 489." },
+    "10":  { "label": "Express Entry draw #10",  "date": "2015-12-04", "desc": "CRS cutoff 491." },
+    "28":  { "label": "Express Entry draw #28",  "date": "2016-06-29", "desc": "CRS cutoff 488." },
+    "42":  { "label": "Express Entry draw #42",  "date": "2016-09-07", "desc": "CRS cutoff 491." },
+    "47":  { "label": "Express Entry draw #47",  "date": "2016-11-02", "desc": "CRS cutoff 472." },
+    "54":  { "label": "Express Entry draw #54",  "date": "2017-02-22", "desc": "CRS cutoff 441." },
+    "57":  { "label": "Express Entry draw #57",  "date": "2017-04-12", "desc": "CRS cutoff 423." },
+    "63":  { "label": "Express Entry draw #63",  "date": "2017-08-02", "desc": "CRS cutoff 440." },
+    "86":  { "label": "Express Entry draw #86",  "date": "2018-03-26", "desc": "CRS cutoff 446, 3,000 ITAs." },
+    "89":  { "label": "Express Entry draw #89",  "date": "2018-05-09", "desc": "CRS cutoff 441, 3,500 ITAs." },
+    "605": { "label": "Express Entry draw #605", "date": "2026-04-15", "desc": "CRS cutoff (French-language) — verify against IRCC draw list." },
+    "667": { "label": "Express Entry draw #667", "date": null,         "desc": "IRCC draw number; verify against current IRCC round list." },
+    "873": { "label": "Express Entry draw #873", "date": null,         "desc": "IRCC draw number; verify against current IRCC round list." }
+  },
+
+  "letters": {
+    "IMM10003": { "label": "Acknowledgement of Information (AOI)", "desc": "Internal acknowledgement; not a user-facing form." },
+    "IMM1017":  { "label": "Medical Report (IMM 1017E)",            "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm1017.html", "desc": "Panel physician uses this to record your immigration medical exam. Issued by IRCC after an upfront medical request." },
+    "IMM1017B": { "label": "Upfront Medical Report",               "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm1017.html", "desc": "Used when you book your medical before IRCC asks (Express Entry / work / study)." },
+    "IMM1344":  { "label": "Application to Sponsor, Undertaking",   "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm1344.html", "desc": "Sponsorship application used by the person sponsoring a family member." },
+    "IMM5406":  { "label": "Additional Family Information",         "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5406.html", "desc": "Required for permanent residence: lists immediate family members of every applicant 18+." },
+    "IMM5409":  { "label": "Statutory Declaration of Common-Law Union", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5409.html", "desc": "Used when common-law partners need to declare their relationship." },
+    "IMM5532":  { "label": "Relationship / Sponsorship Evaluation", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5532.html", "desc": "Documents relationship between sponsor and sponsored family member." },
+    "IMM5645":  { "label": "Family Information (TRV / study / work)", "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/application/application-forms-guides/imm5645.html", "desc": "Family info form for temporary residence applicants." },
+    "IMM5669":  { "label": "Schedule A – Background / Declaration", "desc": "Schedule to IMM 0008 for permanent residence." },
+    "IMM5670":  { "label": "Sponsor Undertaking (Group of Five)",   "desc": "Used by community / group-of-five sponsorship applications." },
+    "IMM5756":  { "label": "Sponsor Document Checklist (spouse/partner)", "desc": "Document checklist for spouses, common-law partners, conjugal partners and dependent children." },
+    "IMM5768":  { "label": "Financial Evaluation (PGP)",            "desc": "Used in Parents & Grandparents sponsorship." },
+    "IMM5771":  { "label": "Document Checklist – PGP Sponsor",      "desc": "Checklist for PGP sponsors." },
+    "IMM5786":  { "label": "Express Entry Profile Confirmation",   "desc": "Letter confirming your EE profile is submitted and active in the pool." },
+    "IMM5787":  { "label": "Express Entry Next Steps Guide",        "desc": "Guidance on what to do after creating or updating an EE profile." },
+    "IMM5791":  { "label": "Invitation to Apply (ITA)",             "desc": "Official EE invitation. You have 60 days to file a complete application." },
+    "IMM5793":  { "label": "AOR – Application Receipt (EE)",        "desc": "Acknowledgement of Receipt confirming IRCC got your EE PR application." },
+    "IMM5794":  { "label": "AOR – Application Receipt (EE)",        "desc": "Acknowledgement of Receipt confirming IRCC got your EE PR application." }
+  },
+
+  "status_codes": {
+    "1":  "Activity type 1: Security screening (background check).",
+    "3":  "Activity type 3: Medical examination activity.",
+    "17": "Security review started (comprehensive background / criminality / security screening).",
+    "33": "Medical exam initiated OR security review completed (depending on key).",
+    "108": "Medical exam completed and results received."
+  },
+
+  "category_colors": {
+    "INITIAL": "neutral",
+    "Medical": "medical",
+    "Security": "security",
+    "Biometric": "biometrics",
+    "Background": "background",
+    "Eligibility": "eligibility",
+    "Document": "document",
+    "System": "system"
+  }
+}
