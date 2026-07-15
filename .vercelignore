@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+!.env.local.example
+StatusCheck.txt
+StatusReport.html
+.next
+node_modules
+.DS_Store
+*.log
