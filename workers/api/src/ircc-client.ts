@@ -148,9 +148,13 @@ async function postJson(
   try {
     json = text ? JSON.parse(text) : null;
   } catch {
+    const snippet = text.replace(/\s+/g, " ").trim().slice(0, 160);
+    const looksHtml = /<\s*(!doctype|html|head|body|title)/i.test(text);
     throw new IrccApiError(
-      "parse",
-      "Upstream returned non-JSON response.",
+      looksHtml || res.status === 403 ? "waf" : "parse",
+      looksHtml || res.status === 403
+        ? `Upstream returned an HTML/block page (HTTP ${res.status}). IRCC/Cognito may be blocking this network — try again later.`
+        : `Upstream returned non-JSON response (HTTP ${res.status}${snippet ? `: ${snippet}` : ""}).`,
       502,
     );
   }

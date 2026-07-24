@@ -41,7 +41,7 @@ export default function LoginPage() {
     setRemember(true);
   }, []);
 
-  const uciValid = useMemo(() => /^[\d-]{5,}$/.test(uci.trim()), [uci]);
+  const uciValid = useMemo(() => /^[0-9-]{5,}$/.test(uci.trim()), [uci]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -133,7 +133,7 @@ export default function LoginPage() {
                 placeholder="Tracker UCI"
                 value={uci}
                 onChange={(e) => setUci(e.target.value)}
-                pattern="[\d-]{5,}"
+                pattern="[0-9-]{5,}"
                 required
               />
             </div>
