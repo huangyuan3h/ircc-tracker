@@ -1,15 +1,14 @@
-# Deploy IRCC Tracker (OpenNext → Cloudflare Workers) on every push to main.
-#
-# Required GitHub repository secrets:
-#   CLOUDFLARE_API_TOKEN   — API token with Workers Scripts:Edit (and Routes if needed)
-#   CLOUDFLARE_ACCOUNT_ID  — Cloudflare account id
-#
-# Settings → Secrets and variables → Actions → New repository secret
+# While IRCC immigrant Tracker upstream is down, deploy the maintenance Worker only.
+# To restore the full app later:
+#   1. Confirm api.ircc-tracker-suivi.apps.cic.gc.ca resolves again
+#   2. Change the Deploy Worker step back to: npx wrangler deploy --config wrangler.toml
+#   3. Restore build:cf / npm test steps if desired
 name: Deploy
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: deploy-production
@@ -17,9 +16,9 @@ concurrency:
 
 jobs:
   deploy:
-    name: Build & deploy
+    name: Deploy maintenance page
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     permissions:
       contents: read
 
@@ -36,15 +35,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test
-
-      - name: Build OpenNext for Cloudflare
-        run: npm run build:cf
-        env:
-          # Baked into the client bundle at build time; empty = same-origin /api.
-          NEXT_PUBLIC_API_BASE: ""
-
       - name: Verify Cloudflare secrets shape
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -57,19 +47,18 @@ jobs:
             echo "::error::Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN secret."
             exit 1
           fi
-          # Account IDs are 32 lowercase/uppercase hex chars — not an API token (cfat_...).
           if ! [[ "$account" =~ ^[0-9a-fA-F]{32}$ ]]; then
-            echo "::error::CLOUDFLARE_ACCOUNT_ID looks invalid (len=${#account}). Expected 32 hex chars from the Cloudflare dashboard sidebar. Do not paste the API token here."
+            echo "::error::CLOUDFLARE_ACCOUNT_ID looks invalid (len=${#account})."
             exit 1
           fi
           if [[ "$token" =~ ^[0-9a-fA-F]{32}$ ]]; then
             echo "::error::CLOUDFLARE_API_TOKEN looks like an Account ID. Secrets may be swapped."
             exit 1
           fi
-          echo "Secrets look well-formed (account_id len=${#account}, token len=${#token})."
+          echo "Secrets look well-formed."
 
-      - name: Deploy Worker
-        run: npx wrangler deploy --config wrangler.toml
+      - name: Deploy maintenance Worker
+        run: npx wrangler deploy --config wrangler.maintenance.toml
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

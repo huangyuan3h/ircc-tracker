@@ -1,0 +1,8 @@
+# Temporary maintenance deployment (replaces OpenNext while IRCC upstream is down).
+name = "ircc-tracker"
+main = "workers/maintenance.js"
+compatibility_date = "2025-04-01"
+
+[[routes]]
+pattern = "ircc-tracker.it-t.xyz"
+custom_domain = true

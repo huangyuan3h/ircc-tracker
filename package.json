@@ -12,6 +12,7 @@
     "test": "tsx --test tests/*.test.ts",
     "test:bash": "bats tests/ircc-check.bats",
     "deploy": "npm run build:cf && wrangler deploy",
+    "deploy:maintenance": "wrangler deploy --config wrangler.maintenance.toml",
     "deploy:preview": "npm run build:cf && wrangler deploy --keep-vars",
     "deploy:api": "cd workers/api && wrangler deploy",
     "deploy:all": "npm run deploy:api && npm run deploy"
